@@ -1,0 +1,4 @@
+interface:
+  display_name: "HowOne Full-stack Apps"
+  short_description: "Build TanStack AI apps with HowOne CLI and MongoDB"
+  default_prompt: "Use $howone to build or update a full-stack AI app with the HowOne CLI."
