@@ -62,8 +62,9 @@ Load the reference needed for the current step; do not load every reference in a
   collection when the product needs history; AI workflow schemas do not create collections.
 - **Credentials stay outside browser code.** YAML contains public configuration and env references.
   Use authorized local/server credentials without printing them. Missing credentials require a
-  precise setup step, never a fabricated token or demo identity. Browser CLI login and deployment
-  are not implemented; the current AI service credential-file bridge is for local dev.
+  precise setup step, never a fabricated token or demo identity. `howone login` only saves a
+  device-scoped CLI credential in `~/.config/howone/auth.json`; it does not sign a browser into the
+  App. Deployment is not implemented. The current AI service credential-file bridge is local dev only.
 
 ## Complete the user-visible feature
 

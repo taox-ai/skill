@@ -5,7 +5,8 @@ App ID and job/Release identity; changing targets or returning a static result d
 
 | Symptom | Check | Recovery |
 |---|---|---|
-| Missing `howone.yaml` | CLI working directory, parent discovery, `--cwd` or `--config` | Point at the intended app; do not initialize a replacement app |
+| Missing `howone.yaml` | CLI working directory, parent discovery, `--cwd` or `--config` | Point at the intended app; do not initialize a replacement app. `login`, `logout` and `whoami` are device-scoped and still work without a project |
+| `No saved dev credential` from an App command | `howone whoami` in any directory | Run `howone login` for that environment, or set `HOWONE_TOKEN`; do not hand-edit `~/.config/howone/auth.json` |
 | Missing/stale generated snapshot | Source path, App ID and artifact hash | Regenerate after the intended source change, then migrate/push through the supported path |
 | Control-plane auth/connection failure | Selected dev profile, control URL and presence of the control token | Restore the actual service/authorized config; do not expose credentials or choose another app |
 | `UC 登录服务暂时不可用` / session 503 | CLI-installed `.howone/auth.json`, platform UC connection and any explicitly configured local tunnel | Restore reachability; a network outage does not prove the UC account/token is invalid |
@@ -33,11 +34,13 @@ network error. Do not send OTPs or start billable AI runs merely to probe connec
 
 ## Structured output
 
-App `db/ai/auth/whoami/logout` successes print JSON on stdout. With `--json`, fatal errors print JSON
+App `db/ai/auth` successes print JSON on stdout; `login/logout/whoami` print the same shape but read
+only the device credential store. With `--json`, fatal errors print JSON
 on stderr and exit nonzero. Help is text on stdout and exits zero, even with `--json`; `-h` is an alias.
 Read stdout and stderr separately. The legacy Registry `run --stream` path emits SSE frames and then
 its final result, so it is not a single JSON document even when `--json` is supplied.
 
-`whoami` only inspects local imported identity/expiry. It does not verify the token remotely or prove
-the app's current UC login. Browser `login`, `deploy` and `ai run` are not implemented; do not retry
-them as if an expired session were the cause.
+`whoami` only inspects the saved credential's identity, issuing site and expiry. It does not verify
+the token remotely or prove the app's current UC login. `login` is implemented but only saves the CLI
+developer credential, so it cannot complete an App user's OAuth/OTP sign-in; `deploy` and `ai run`
+remain placeholders — do not retry them as if an expired session were the cause.

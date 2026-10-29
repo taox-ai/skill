@@ -27,7 +27,7 @@ cd my-app
 Init installs dependencies by default and includes compatible SDK/Mongo runtime packages, a users
 schema, custom login UI and server integration points. It creates no business collections or AI
 workflow. Before init, use an authorized dev platform creator token (saved credential or
-`HOWONE_TOKEN`) and the dev Backend endpoint (`HOWONE_CONTROL_URL` or `--control-url`). Init calls
+`HOWONE_TOKEN`) and the dev Backend endpoint (`https://api.memtest.howone.dev`, overridable with `HOWONE_CONTROL_URL` or `--control-url`). Init calls
 the real creation API and writes its returned App ID. Use `--app-id <allocated-id>` to verify and bind
 an existing owned App. Retry the same target after network failure to reuse its saved creation key.
 If generation finished but installation failed, run `bun install` in the generated project. Use `--region cn` only when CN/xcamel is intended; the environment remains dev.
@@ -96,4 +96,6 @@ the user's provider proof; perform independent implementation/checks while await
 
 Start the local App for review when requested or useful. Report its URL, what works, checks performed,
 and any exact unavailable credential/service. Continue all work not blocked by that dependency.
-`howone deploy` and browser `howone login` are placeholders, so they cannot complete those steps.
+`howone deploy` is still a placeholder, and `howone login` only saves the CLI developer credential
+in `~/.config/howone/auth.json` — it does not sign a browser into the App, so it cannot complete the
+user's OAuth/OTP steps for you.

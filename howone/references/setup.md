@@ -17,7 +17,7 @@ Database defaults, Todo business data and generated AI service Releases are not 
 
 ## Resource connection
 
-The operator supplies controlPlane.url and a platform creator token from `HOWONE_TOKEN`, `--token`
+The operator supplies `controlPlane.url` (dev defaults to `https://api.memtest.howone.dev`) and a platform creator token from `HOWONE_TOKEN`, `--token`
 or the local dev credential store. Newly initialized profiles select creator authentication; the
 Backend verifies the platform session and PG ownership for each DB/AI request. Raw UC tokens and
 App-user tokens cannot create/manage Apps. Legacy dev fixtures retain only their explicitly scoped
@@ -59,16 +59,26 @@ generate → migrate. Database init can be repeated; do not invent a db connect 
 
 ## Developer/AI credentials
 
-`howone whoami` inspects the imported dev credential; `logout` removes the local entry. A real
-browser `howone login` grant and refresh policy are follow-up work, so do not invoke nonexistent
-exchange endpoints. The dev store is `~/.config/howone/credentials.json`, directory 0700/file 0600.
+`howone login` opens the hosted login page (`https://xcamel.dev` for dev, `https://howone.ai` for prod),
+receives its `localStorage.auth_token` on a one-time `127.0.0.1` callback and saves it. `howone whoami`
+prints the saved identity, issuing site and expiry; `howone logout` removes that entry and
+`howone logout --all` clears every environment.
+
+The store is device-scoped and keyed by the token's issuing site, not by the App: one file,
+`~/.config/howone/auth.json` (directory 0700, file 0600), shared by every App and every local port.
+`--env`, `--site` and `--config-dir` (or `HOWONE_CONFIG_DIR`) choose the entry; a token from the
+environment or `--token` is never written to disk. These identity commands do not need `howone.yaml`,
+so they also run before the App exists. Never place a credential in `howone.yaml`, `dev.yaml` or
+the App directory.
 Use only a token authorized by the user/operator; do not fabricate one or borrow another account.
 
 Current dev AI execution uses the saved platform creator identity for billing, separate from UC login.
 `howone ai init` installs an App-scoped runtime key and the server-only local credential provider.
 The App calls the Backend execution gateway; Backend checks PG ownership and the App key before
 injecting its EAX machine credential upstream. The machine key is never exported into the App.
-The developer credential-file bridge remains local dev only. Browser CLI login is deferred.
+The developer credential bridge remains local dev only: `howone ai init` writes an App-scoped
+projection of the saved credential to `~/.config/howone/apps/<appId>.json` (0600) and points the App
+at it, so App code never opens the device credential store and other Apps' credentials stay hidden.
 
 `howone auth init` fetches this App’s platform UC configuration and installs ignored `.howone/auth.json`
 (mode 0600), with the trusted origin from `dev.yaml`. The server SDK loads it automatically and checks
