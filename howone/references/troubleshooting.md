@@ -14,7 +14,7 @@ App ID and job/Release identity; changing targets or returning a static result d
 | Valid UC login but app `users` record is delayed | Best-effort Mongo recording and database binding | Fix Mongo separately; UC still determines login success |
 | AI authoring queued/running | Saved job ID with `ai status --job <id>` | Continue independent code work and poll; do not resubmit the same contract repeatedly |
 | AI authoring failed/canceled/invalid_request | Real job error and declared contract | Fix the cause before a new submission; retain diagnostic IDs |
-| AI execution is unavailable | Published sync, ready capability, server AI service binding and local dev credential | Sync/connect the intended Release; the CLI developer credential differs from the UC app session |
+| AI execution is unavailable | Published sync, ready capability, server AI service binding and local dev credential | Sync/connect the intended Release; the CLI developer credential differs from the UC app session. After upgrading to a CLI that stores credentials per device (`auth.json`), run `howone ai init` once more: the App's `.env.local` still points at the retired `credentials.json` |
 | Browser waiting canceled or server restarted | Upstream run state and app persistence | Do not claim upstream cancellation or durable completion without evidence |
 
 Missing or mismatched authentication binding: rerun `howone auth init` for this App. Do not hand-edit
