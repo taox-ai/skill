@@ -5,15 +5,24 @@ version the app actually imports, rather than copying code from another app or a
 
 ## Find matching documentation
 
-The generated starter pins `@howone/sdk` to `file:./.howone/runtime/sdk`. Its guides live at:
+The starter pins published npm versions of `@howone/sdk` and `@howone/db` in `package.json`. After
+installation, read the matching SDK guides:
 
-- `.howone/runtime/sdk/docs/app-auth.md` for UC login, cookies and server authorization.
-- `.howone/runtime/sdk/docs/app-ai.md` for AI actions, manifests and the execution route.
+- `node_modules/@howone/sdk/docs/app-auth.md` for UC login, cookies and server authorization.
+- `node_modules/@howone/sdk/docs/app-ai.md` for AI actions, manifests and the execution route.
 
-For a registry-installed SDK, use `node_modules/@howone/sdk/docs/`. Check `package.json` dependencies
-and the resolved package's exports first. The CLI ships these docs alongside the same SDK build;
-they are available offline. If an older package has no docs, inspect its exported `.d.ts` files and
-the app's existing adapters; upgrade only when the requested feature needs a missing capability.
+Check the installed package's version, exports and `.d.ts` files first. Documentation ships in the
+SDK package, so it is available offline after dependency installation. If an older App uses a local
+`file:` SDK snapshot, read that resolved package's docs/types instead. Do not silently replace its
+dependency or assume the global Skill matches it. An older package without docs can still be
+inspected through its declarations and existing adapters; upgrade only when the feature requires it.
+
+## Environment comes from the App
+
+The SDK accepts explicit endpoints and auth bindings supplied by the App/CLI. It does not choose
+`dev`/`prod`, infer region from a hostname, or embed an environment's service addresses. Keep those
+choices in project configuration and inject their resolved values. Current CLI resource operations
+support dev only; this boundary allows later production and regional targets without another SDK.
 
 ## Select the entry point
 

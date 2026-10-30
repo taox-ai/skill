@@ -4,11 +4,23 @@ The CLI package is `howone`; install it with the environment's chosen package ma
 installed, use `npx --yes howone@beta init app my-app --yes` or install `howone@beta` globally.
 The unqualified npm `latest` still points at the old CLI. Read only the relevant command's help.
 
-`howone.yaml` selects `dev.yaml` and declares project.appId (the platform-generated shortId), database.schema and ai.source.
+`howone.yaml` is the single App configuration file. It declares `profile: dev`, `project.appId`
+(the platform-generated shortId), runtime region, brand, control-plane URL, auth origin, schema and AI source.
+New Apps do not have a separate `dev.yaml` or `environmentFiles` mapping. Keep project declarations
+and public settings in this Git-tracked YAML; CLI resource init writes server connection values and
+credentials into the ignored `.env`. Do not add another config layer or move secrets into YAML.
+Older split projects remain readable when their manifest explicitly declares `environmentFiles`.
+Existing Apps with `.env.local` keep receiving init updates in that file, since their startup scripts
+and Bun/Vite may give it priority over `.env`. To migrate, preserve and merge its settings into `.env`,
+update explicit startup/test `--env-file` paths, then remove `.env.local` and restart. Do not leave
+competing credentials in both files or copy secrets into YAML.
 Backend retains the PG UUID internally and verifies shortId ownership before resolving it. Existing UUID
 manifests remain valid for migration; new scaffolds and HOWONE_APP_ID use shortId.
-App ID changes are resource targeting changes, not a way to gain access. Service URLs differ across
-environments; this release rejects non-dev profiles. Brand is howone globally and xcamel in CN.
+App ID changes are resource targeting changes, not a way to gain access. The project/CLI selects
+environment and region, then supplies explicit URLs and auth context to the SDK. The SDK must not
+infer these from hostnames or select a different environment itself. This release executes dev
+resource operations only; future dev/prod and CN/global targets belong to external project configuration.
+Brand is howone globally and xcamel in CN.
 
 Init creates a runnable homepage, Node server, users schema, optional SDK auth/AI integration points,
 and the local Skill. It registers App metadata in Studio PG through the
@@ -29,7 +41,7 @@ howone db generate
 howone db migrate
 ```
 
-`db init` writes only the restricted App database binding into ignored `.env.local`. Repeating an
+`db init` writes only the restricted App database binding into ignored `.env`. Repeating an
 unchanged init does not rewrite the file or restart the app. Run `bun run dev` from the app.
 A configured backend must allow this App ID; local scaffolding does not extend its authorization.
 
@@ -53,7 +65,7 @@ Mongo failure never turns a valid UC login into a failed login. No Mongo session
 Missing configuration is a setup requirement, not permission to invent a demo identity or bypass UC.
 
 Database init provisions only the selected App’s logical database, database-scoped runtime account
-and limited role, then writes HOWONE_APP_ID, MONGO_URL and MONGO_DB_NAME into .env.local (0600).
+and limited role, then writes HOWONE_APP_ID, MONGO_URL and MONGO_DB_NAME into .env (0600).
 It preserves unrelated env values and never prints connection passwords. Schema changes remain
 generate → migrate. Database init can be repeated; do not invent a db connect command.
 
@@ -68,20 +80,23 @@ The store is device-scoped and keyed by the token's issuing site, not by the App
 `~/.config/howone/auth.json` (directory 0700, file 0600), shared by every App and every local port.
 `--env`, `--site` and `--config-dir` (or `HOWONE_CONFIG_DIR`) choose the entry; a token from the
 environment or `--token` is not added to the device store; `ai init` copies the selected token to the App server env. These identity commands do not need `howone.yaml`,
-so they also run before the App exists. Never place a credential in `howone.yaml` or `dev.yaml`; ignore runtime env and binding files in Git.
+so they also run before the App exists. Never place a credential in `howone.yaml`; ignore runtime env
+and binding files in Git.
 Use only a token authorized by the user/operator; do not fabricate one or borrow another account.
 
 Current dev AI execution uses the saved platform creator identity for billing, separate from UC login.
 `howone ai init` configures the EAX runtime and writes the EAX URL plus temporary `HOWONE_AI_TOKEN`
-to ignored `.env.local`. The memtest EAX runtime authenticates with `Authorization: Bearer` using
+to ignored `.env`. The memtest EAX runtime authenticates with `Authorization: Bearer` using
 that CLI token and no release header. There is no Backend execution gateway or per-App credential-file
 projection. `--token`, `HOWONE_TOKEN` and the saved CLI credential all use this same initialization path.
 
 `howone auth init` fetches this App’s platform UC configuration and installs ignored `.howone/auth.json`
-(mode 0600), with the trusted origin from `dev.yaml`. The server SDK loads it automatically and checks
+(mode 0600), with the trusted origin from `howone.yaml.auth.origin`. The server SDK loads it automatically and checks
 the App ID. Keep this file with the runtime when packaging; start Node from the App root.
 The command removes retired UC/session/origin env keys and preserves unrelated settings. It does not
 generate a session key. UC verifies tokens; the SDK handles HttpOnly Cookies, refresh and OAuth state/PKCE.
+After changing `auth.origin` or the App's local port, run `howone auth init` again and restart the App;
+the SDK uses the installed binding snapshot, not a live read of `howone.yaml`.
 A migration from the old encrypted Cookie requires signing in again.
 It does not log a user in. Google/GitHub require the App’s own provider credentials; the command
 never downloads the platform’s shared OAuth client secrets.
@@ -117,7 +132,8 @@ TanStack Query owns session and remote data; the Zustand store holds UI state, w
 credentials or query results. Create the store inside its provider so SSR requests never share it.
 
 shadcn is configured in `components.json` with Tailwind v4, `rsc: false`, and `@/components/ui`.
-Common components are included as source. Add more from the app root:
+Official shadcn/ui registry components are included as source for this template release. Update or add
+a component from the app root:
 
 ```bash
 bunx shadcn@latest add <component>
@@ -127,7 +143,8 @@ References: [TanStack file routes](https://tanstack.com/router/latest/docs/frame
 [TanStack server functions](https://tanstack.com/start/latest/docs/framework/react/guide/server-functions),
 [shadcn TanStack installation](https://ui.shadcn.com/docs/installation/tanstack).
 
-The CLI ships local versioned runtime packages under `.howone/runtime`, referenced by `file:`.
-Keep them with generated source until a reviewed upgrade replaces them with compatible releases.
-They contain runtime code and matching SDK docs, not credentials or generated business resources.
-Read [SDK integration](sdk.md) for installed documentation and entry points.
+New Apps install exact published `@howone/sdk` and `@howone/db` versions from npm. Their versions are
+recorded in `package.json` and the lockfile; no runtime package is copied into `.howone`. Read the
+installed SDK's `node_modules/@howone/sdk/docs/` and export types before changing integration code.
+Existing Apps may still have local `file:` snapshots; preserve their dependency choice unless the task
+includes upgrading it. See [SDK integration](sdk.md).

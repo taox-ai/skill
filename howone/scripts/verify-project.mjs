@@ -63,7 +63,7 @@ if (fs.existsSync(aiPath)) {
     errors.push('Invalid AI manifest')
   }
 } else warnings.push('No AI Release synced; expected until an AI feature is requested')
-if (!fs.existsSync(path.join(root, '.env.local')))
+if (!fs.existsSync(path.join(root, '.env')))
   warnings.push('No local server env; real platform capabilities require configuration')
 console.log(
   JSON.stringify(

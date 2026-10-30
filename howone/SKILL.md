@@ -11,7 +11,8 @@ Initialize only the database, auth and AI capabilities the product needs.
 
 ## Use the project's version
 
-In an existing app, read its `AGENTS.md`, nearest `howone.yaml`, selected profile and affected code.
+In an existing app, read its `AGENTS.md`, nearest `howone.yaml` and affected code. The single manifest
+contains the App target, selected dev environment and public service settings.
 Prefer its bundled `.howone/skills/howone` guidance to a newer global copy. Preserve its App ID,
 business data and conventions; resource operations resolve the manifest from the working directory.
 

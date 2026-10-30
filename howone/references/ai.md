@@ -41,7 +41,7 @@ Sync requires completed + published and verifies project/Release identity, then 
 `src/lib/generated/ai-manifest.json`. Preserve previous bindings until a new result is verified.
 
 After sync, bind the action from its manifest; `defineAiAction` takes **Zod schemas**, not raw JSON Schema.
-For this image contract, `src/lib/image-actions.ts` can contain:
+For this image contract, `src/lib/image-contracts.ts` can contain:
 
 ```ts
 import { defineAiAction } from '@howone/sdk/ai'
@@ -75,7 +75,7 @@ The default browser client posts to `/api/ai/workflow/execute/{projectId}/{workf
 the matching TanStack Server Route when adding AI: the starter provides the runtime factory, not
 this business endpoint. Use `manifest.appId` as the client project ID, check the path against that
 manifest on the server, validate the submitted `inputs`, and return the authenticated SSE response.
-Read the installed SDK's `docs/app-ai.md` for its exact body and route example. A 404 at this App path
+Read `node_modules/@howone/sdk/docs/app-ai.md` for its exact body and route example. A 404 at this App path
 usually means the route is absent or mismatched; it is not evidence that authoring needs resubmission.
 
 The verified image example takes one scene description and returns one `generated_image_url`.

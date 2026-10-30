@@ -25,7 +25,7 @@ UC tenant IDs or add an app encryption secret. Authentication context belongs to
 
 Generated App bindings use VPN-reachable dev endpoints. A `localhost`, `127.0.0.1` or
 `.svc.cluster.local` address in a database, UC or AI binding is invalid and indicates a broken
-control-plane configuration. Check the selected `dev.yaml` target and service readiness before
+control-plane configuration. Check the target in `howone.yaml` and service readiness before
 changing SDK login code; do not repair it with a local port-forward in a shared App config.
 
 A session request with no cookie may return anonymous without contacting UC. A successful anonymous

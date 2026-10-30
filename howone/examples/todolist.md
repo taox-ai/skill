@@ -40,11 +40,11 @@ howone auth init
 howone ai init
 ```
 
-Use `--region global` for the overseas HowOne brand. The generated `dev.yaml` points at the
+Use `--region global` for the overseas HowOne brand. The single `howone.yaml` points at the
 memtest control plane and remote dev services. No Mongo, UC or AI service binding should contain
 `localhost`, `127.0.0.1` or `.svc.cluster.local`.
 
-The generated ignored `.env.local` contains the App binding:
+The generated ignored `.env` contains the App binding:
 
 ```text
 HOWONE_APP_ID=<short-id>

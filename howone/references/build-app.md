@@ -8,6 +8,11 @@ UI and API to their request. This is one Skill; the linked references supply det
 Use a compatible installed `howone`, or the package runner `npx --yes howone@beta` for this release.
 For a persistent installation, use `npm install --global howone@beta`. In package-runner mode,
 replace the `howone` prefix in the examples below with `npx --yes howone@beta`.
+The single-file/npm template described here requires `howone` 1.0.0-beta.6 or later in the 1.0 beta
+line. An older compatible App may keep its existing CLI for unrelated maintenance. Before creating
+a new remote App with a supplied local CLI build, confirm its template's exact SDK/DB versions are
+published; otherwise use the supplied SDK/DB release artifacts for local verification and complete
+their release before onboarding users. Do not create repeated remote Apps to retry an unpublished dependency.
 Check `init app --help` supports TanStack and `db migrate --help` describes generated snapshots.
 If missing, install the beta CLI with the user's chosen package manager and check again. Do not
 upgrade a compatible existing installation just to match a remembered command.
@@ -27,7 +32,7 @@ howone init app my-app --yes --json
 cd my-app
 ```
 
-Init installs dependencies by default and includes compatible SDK/Mongo runtime packages, a users
+Init installs the template's exact published SDK/DB dependencies from npm by default and includes a users
 schema, custom login UI and server integration points. It creates no business collections or AI
 workflow. Before init, use an authorized dev platform creator token (saved credential or
 `HOWONE_TOKEN`) and the dev Backend endpoint (`https://api.memtest.howone.dev`, overridable with `HOWONE_CONTROL_URL` or `--control-url`). Init calls
@@ -35,8 +40,8 @@ the real creation API and writes its returned App ID. Use `--app-id <allocated-i
 an existing owned App. Retry the same target after network failure to reuse its saved creation key.
 If generation finished but installation failed, run `bun install` in the generated project. Use `--region cn` only when CN/xcamel is intended; the environment remains dev.
 
-For an existing app, preserve its selected App and structure. Read the nearest `howone.yaml`, profile
-and feature code. Do not initialize over the existing project or replace its business model.
+For an existing app, preserve its selected App and structure. Read the nearest `howone.yaml` and
+feature code. Do not initialize over the existing project or replace its business model.
 
 ## 2. Design the actual feature
 
@@ -65,7 +70,7 @@ howone db generate
 howone db migrate
 ```
 
-Database init also writes the restricted App connection into ignored .env.local; there is no separate
+Database init also writes the restricted App connection into ignored .env; there is no separate
 db connect command. Re-running init repairs the binding and preserves unrelated configuration.
 For an already provisioned app, perform only the required operations. `db status` reads remote
 state; `db generate` is a local snapshot, not a remote operation. `db push` is an alternative to
