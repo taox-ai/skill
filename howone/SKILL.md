@@ -10,6 +10,15 @@ project initialization, business schema, authenticated APIs, UI and AI integrati
 Choose appropriate interfaces and collections from the requirement; the user does not need to know
 HowOne command names or select separate database/auth/AI skills.
 
+## Zero-setup users
+
+Assume the user is unfamiliar with HowOne. When the user asks for an App, inspect the environment
+and perform the setup yourself: install or select the `howone` CLI, run `howone login` when no dev
+credential exists, then continue with App, database, auth and AI initialization. Do not ask the user
+to memorize or paste these commands or tokens. If `howone login` opens a browser, ask only for the
+user to finish that normal sign-in; resume the build automatically after it succeeds. After setup,
+the user should only need to describe the App they want.
+
 ## Start with the real environment
 
 Use the installed CLI's help as the command reference:
