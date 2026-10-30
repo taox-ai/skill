@@ -4,8 +4,14 @@ This is the complete flow a teammate can use after installing the HowOne Skill.
 
 ## User request to an agent
 
+If the current agent session does not have the Skill yet, start with:
+
+```bash
+npx skills add taox-ai/skill --skill howone
+```
+
 ```text
-请用 HowOne 创建一个中文 Todo 全栈 App：支持 UC 登录，每个用户只能看到自己的 Todo，
+请先使用 HowOne Skill，然后创建一个中文 Todo 全栈 App：支持 UC 登录，每个用户只能看到自己的 Todo，
 支持创建、完成、删除和筛选；页面使用 TanStack Start 和 shadcn；再加一个 AI 能力，
 可以根据 Todo 内容生成一张图片并保存生成记录。只使用 dev 环境。
 ```

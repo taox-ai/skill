@@ -13,7 +13,8 @@ HowOne command names or select separate database/auth/AI skills.
 ## Zero-setup users
 
 Assume the user is unfamiliar with HowOne. When the user asks for an App, inspect the environment
-and perform the setup yourself: install or select the `howone` CLI, run `howone login` when no dev
+and perform the setup yourself. If this Skill is not installed in the current agent session, start
+with `npx skills add taox-ai/skill --skill howone`; then install or select the `howone` CLI, run `howone login` when no dev
 credential exists, then continue with App, database, auth and AI initialization. Do not ask the user
 to memorize or paste these commands or tokens. If `howone login` opens a browser, ask only for the
 user to finish that normal sign-in; resume the build automatically after it succeeds. After setup,
