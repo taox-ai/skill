@@ -71,6 +71,13 @@ authenticates its UC Cookie and calls the server's `createAiRuntime` with the CL
 Release/hash/config IDs pin execution; credentials never enter the browser. The starter supplies
 `createAppAiRuntime(manifest)` in `src/server/ai.server.ts`, but does not invent an AI binding before sync.
 
+The default browser client posts to `/api/ai/workflow/execute/{projectId}/{workflowId}`. Implement
+the matching TanStack Server Route when adding AI: the starter provides the runtime factory, not
+this business endpoint. Use `manifest.appId` as the client project ID, check the path against that
+manifest on the server, validate the submitted `inputs`, and return the authenticated SSE response.
+Read the installed SDK's `docs/app-ai.md` for its exact body and route example. A 404 at this App path
+usually means the route is absent or mismatched; it is not evidence that authoring needs resubmission.
+
 The verified image example takes one scene description and returns one `generated_image_url`.
 Reference images or batch behavior require matching supported contracts; do not promise them merely
 by adding UI controls. Output only the fields the product uses. Dimensions belong in supported
@@ -85,43 +92,34 @@ plan; do not claim that a detached promise survives deployment or Vite restart.
 Current runtime defaults allow up to 15 minutes; stopping browser waiting does not prove that the
 upstream task was cancelled. Submission/execute errors and credit errors are real UI states.
 
-## AI capability design operations
+## Edit an existing workflow
 
-HowOne records a local AI contract and the opaque references returned by the external AI service. It
-does not reproduce or renumber that service's internal version, revision, generation or Release
-lifecycle.
+The CLI authoring source accepts `mode: 'create'` or `mode: 'update'`. For an edit, keep the capability's
+stable name and existing `workflowId` from the previous generated snapshot or synced manifest:
 
-Read-only capability operations are:
-
-```text
-get_current_ai_capabilities
-get_ai_capability
-get_current_ai_version
-list_ai_capability_versions
-get_ai_capability_version
-get_ai_artifacts
+```ts
+export default {
+  mode: 'update',
+  capability: [{
+    name: 'generateImage',
+    workflowId: existingWorkflowId,
+    description: 'Updated product behavior',
+    inputSchema,
+    outputSchema,
+  }],
+}
 ```
 
-HowOne contract operations are:
+Change the configured source, then use the same `validate → generate → migrate → status → sync`
+flow. Generate reuses the previous snapshot's workflow ID for the same capability name when the
+source omits it. Do not rename or remove the identity to work around an authoring failure.
+A new capability uses `create`; keep each submission in one mode and submit related edits together.
 
-```text
-create_capability
-update_capability
-delete_capability
-deprecate_capability
-apply_capability_patch
-restore_capability_version
-```
+HowOne records JSON contracts and opaque service references; it does not manage EAX's internal
+version numbers. There are no CLI delete, deprecate or restore workflow commands in this release.
+Studio's internal AI contract operations are not CLI subcommands. Removing an action from app code
+or restoring a Git snapshot alone does not delete or roll back a remote workflow.
 
-Use `create_capability` for a new capability and `update_capability` for editing an existing one.
-An update must carry the existing manifest's `workflowId`; never turn a failed update into a new
-create. Deletion and deprecation are contract operations: prefer `deprecate_capability` while source
-code still references a capability, and delete only after references and runtime bindings are gone.
-`restore_capability_version` restores a HowOne contract snapshot, not the external service's runtime
-data or internal version.
-
-External workflow authoring uses `create` for a new workflow and `update` for an existing workflow.
-Keep one request's operations in one mode and do not mix create/update. When a request changes several
-capabilities, build one complete patch/snapshot and submit it once. `howone ai generate` writes the
-local snapshot; `howone ai migrate` submits the latest complete snapshot. The snapshot may record
-service job, workflow and Release IDs/hashes as opaque metadata, but HowOne does not manage those IDs.
+Resume from the job recorded in `migrations/.ai-receipt.json` after a session interruption. Query
+its status before submitting again; keep the previous manifest until the replacement is published
+and verified by sync.

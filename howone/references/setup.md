@@ -1,8 +1,8 @@
 # Project setup and runtime
 
 The CLI package is `howone`; install it with the environment's chosen package manager. If it is not
-installed, `npx howone init app my-app --yes` is the package-runner form once this CLI release is
-published. Check `howone --help`, `howone init app --help`, `howone db --help`, `howone ai --help`.
+installed, use `npx --yes howone@beta init app my-app --yes` or install `howone@beta` globally.
+The unqualified npm `latest` still points at the old CLI. Read only the relevant command's help.
 
 `howone.yaml` selects `dev.yaml` and declares project.appId (the platform-generated shortId), database.schema and ai.source.
 Backend retains the PG UUID internally and verifies shortId ownership before resolving it. Existing UUID
@@ -18,10 +18,10 @@ Database defaults, Todo business data and generated AI service Releases are not 
 ## Resource connection
 
 The operator supplies `controlPlane.url` (dev defaults to `https://api.memtest.howone.dev`) and a platform creator token from `HOWONE_TOKEN`, `--token`
-or the local dev credential store. Newly initialized profiles select creator authentication; the
+or the local dev credential store. The
 Backend verifies the platform session and PG ownership for each DB/AI request. Raw UC tokens and
-App-user tokens cannot create/manage Apps. Legacy dev fixtures retain only their explicitly scoped
-`HOWONE_APP_CONTROL_TOKEN`. Never save creator/control tokens in app runtime env or project YAML.
+App-user tokens cannot create/manage Apps. Never save creator tokens in project YAML. The dev-only
+AI runtime receives its creator token through ignored server env during `ai init`.
 
 ```bash
 howone db init
@@ -67,16 +67,15 @@ prints the saved identity, issuing site and expiry; `howone logout` removes that
 The store is device-scoped and keyed by the token's issuing site, not by the App: one file,
 `~/.config/howone/auth.json` (directory 0700, file 0600), shared by every App and every local port.
 `--env`, `--site` and `--config-dir` (or `HOWONE_CONFIG_DIR`) choose the entry; a token from the
-environment or `--token` is never written to disk. These identity commands do not need `howone.yaml`,
-so they also run before the App exists. Never place a credential in `howone.yaml`, `dev.yaml` or
-the App directory.
+environment or `--token` is not added to the device store; `ai init` copies the selected token to the App server env. These identity commands do not need `howone.yaml`,
+so they also run before the App exists. Never place a credential in `howone.yaml` or `dev.yaml`; ignore runtime env and binding files in Git.
 Use only a token authorized by the user/operator; do not fabricate one or borrow another account.
 
 Current dev AI execution uses the saved platform creator identity for billing, separate from UC login.
 `howone ai init` configures the EAX runtime and writes the EAX URL plus temporary `HOWONE_AI_TOKEN`
 to ignored `.env.local`. The memtest EAX runtime authenticates with `Authorization: Bearer` using
-that CLI token and no release header. Older control planes may return a gateway binding; its App key
-is kept in ignored `.howone/ai.json`.
+that CLI token and no release header. There is no Backend execution gateway or per-App credential-file
+projection. `--token`, `HOWONE_TOKEN` and the saved CLI credential all use this same initialization path.
 
 `howone auth init` fetches this App’s platform UC configuration and installs ignored `.howone/auth.json`
 (mode 0600), with the trusted origin from `dev.yaml`. The server SDK loads it automatically and checks
@@ -130,5 +129,5 @@ References: [TanStack file routes](https://tanstack.com/router/latest/docs/frame
 
 The CLI ships local versioned runtime packages under `.howone/runtime`, referenced by `file:`.
 Keep them with generated source until a reviewed upgrade replaces them with compatible releases.
-They contain runtime code, not credentials or generated business resources. Check installed exports
-and typings when binding SDK calls. Do not assume the npm beta has unreleased workspace APIs.
+They contain runtime code and matching SDK docs, not credentials or generated business resources.
+Read [SDK integration](sdk.md) for installed documentation and entry points.

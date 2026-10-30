@@ -1,88 +1,65 @@
 ---
 name: howone
-description: Build and iterate full-stack AI apps with HowOne (xcamel in CN). Use when a user asks for an app with HowOne capabilities, or changes to its MongoDB data, UC login integration or AI workflows. Coordinates CLI resources and ordinary TanStack application code.
+description: Build and update full-stack AI apps with HowOne (xcamel in CN), using its CLI for App resources, MongoDB migrations, UC login and AI workflows. Use for HowOne app development or troubleshooting these integrations.
 ---
 
 # Build HowOne apps
 
-The user describes a product; deliver its working full-stack implementation. Handle CLI setup,
-project initialization, business schema, authenticated APIs, UI and AI integration as one task.
-Choose appropriate interfaces and collections from the requirement; the user does not need to know
-HowOne command names or select separate database/auth/AI skills.
+Turn the user's product request into a working TanStack Start app. Handle the platform setup and
+write ordinary application code; the user does not need to choose CLI commands or design the schema.
+Initialize only the database, auth and AI capabilities the product needs.
 
-## Zero-setup users
+## Use the project's version
 
-Assume the user is unfamiliar with HowOne. When the user asks for an App, inspect the environment
-and perform the setup yourself. If this Skill is not installed in the current agent session, start
-with `npx skills add taox-ai/skill --skill howone`; then install or select the `howone` CLI, run `howone login` when no dev
-credential exists, then continue with App, database, auth and AI initialization. Do not ask the user
-to memorize or paste these commands or tokens. If `howone login` opens a browser, ask only for the
-user to finish that normal sign-in; resume the build automatically after it succeeds. After setup,
-the user should only need to describe the App they want.
+In an existing app, read its `AGENTS.md`, nearest `howone.yaml`, selected profile and affected code.
+Prefer its bundled `.howone/skills/howone` guidance to a newer global copy. Preserve its App ID,
+business data and conventions; resource operations resolve the manifest from the working directory.
 
-## Start with the real environment
+Use installed CLI help for command syntax and prerequisites. Read `howone --version` and the relevant
+`howone <family> <command> --help` once per unfamiliar operation; reuse it during the task. For SDK
+methods, read the app's installed docs and types as described in [SDK integration](references/sdk.md).
+Do not assume a newer global Skill describes an older CLI or SDK.
 
-Use the installed CLI's help as the command reference:
+For a new workstation, follow [bootstrap](references/build-app.md#bootstrap). The full-stack CLI is
+currently distributed as `howone@beta`; unqualified `npx howone` selects the older `latest` release.
+Handle installation and `howone login` when needed. The user completes the browser sign-in; continue
+independent work while waiting, and resume resource setup after the credential is available.
 
-```bash
-howone --version
-howone init app --help
-howone db migrate --help
-```
+## Load the relevant guide
 
-Before an unfamiliar operation, read `howone <family> <command> --help` for its required arguments,
-local/remote effects and prerequisites. Never invent a command or treat a placeholder as implemented.
-If the CLI is missing or incompatible, follow [build an app](references/build-app.md#bootstrap).
-
-In an existing project, read its nearest `howone.yaml`, selected profile, `AGENTS.md` and relevant
-feature code. The CLI resolves parent manifests; confirm the intended App ID and dev profile before
-resource operations. Do not substitute another App to get around missing permissions.
-
-## Route the task
-
-| User's goal | Read and execute |
+| Task | Guide |
 |---|---|
-| New full-stack app, or a feature spanning UI/API/data/AI | [Build an app](references/build-app.md) for the complete delivery flow |
-| Database schema or persistence change | [Database](references/database.md) for schema, generate → migrate and ownership |
-| AI capability or saved AI results | [AI](references/ai.md) for asynchronous authoring, SDK binding and persistence |
-| App login, credentials or runtime wiring | [Setup](references/setup.md) for the UC and server boundaries |
-| Broken login, connection, migration or generation | [Troubleshooting](references/troubleshooting.md), then only the affected reference |
-| UI-only iteration | Relevant app components; no resource operation needed |
+| New app or a feature spanning UI, APIs and data | [Build an app](references/build-app.md) |
+| Mongo schema, queries or migrations | [Database](references/database.md) |
+| AI create/update, asynchronous authoring or saved results | [AI](references/ai.md) |
+| UC login, credentials or environment setup | [Setup](references/setup.md) |
+| SDK imports and browser/server integration | [SDK integration](references/sdk.md) |
+| Failed login, connection, migration or AI task | [Troubleshooting](references/troubleshooting.md) |
 
-Load the reference needed for the current step; do not load every reference in advance.
+Load only the guide needed for the current step. UI-only work normally needs no resource operation.
 
-## Platform boundaries
+## Keep the platform boundaries
 
-- **Dev only.** TanStack Start on Node is the only starter. Global branding is howone; CN is xcamel.
-  Init registers an owned App through the dev Backend and generates source. Mongo provisioning
-  and deployment are separate steps.
-- **The app owns its data and APIs.** Use app-owned Mongo logical databases and ordinary repositories.
-  Do not use dynamic Entity, usershares or retired Agent design tools. Only `users` is a default
-  collection; app requirements decide every other collection and user business field.
-- **UC owns identity.** `users._id` is the verified UC ID string; Mongo recording never gates a valid
-  UC login. Business references use this ID. Derive ownership on the server and scope reads/writes.
-  Never accept a browser-supplied owner as authorization.
-- **The CLI manages resources; the SDK serves the app.** Use `db init`, `auth init` and `ai init` for the product’s required capabilities; each installs its
-  server environment. Database init provisions the selected App and writes its restricted runtime env; database DDL uses
-  `generate → migrate` or
-  optional direct `push`. Runtime requests never apply DDL. Browser SDK calls are same-origin;
-  `@howone/sdk/server` and database access stay on the server.
-- **AI authoring and AI execution are different.** CLI submission returns a job, not a usable result.
-  Bind SDK actions only after syncing the verified published Release. Save results in an app business
-  collection when the product needs history; AI workflow schemas do not create collections.
-- **Credentials stay outside browser code.** YAML contains public configuration and env references.
-  Use authorized local/server credentials without printing them. Missing credentials require a
-  precise setup step, never a fabricated token or demo identity. `howone login` only saves a
-  device-scoped CLI credential in `~/.config/howone/auth.json`; it does not sign a browser into the
-  App. Deployment is not implemented. The current AI service credential-file bridge is local dev only.
+- **Dev only.** The starter is TanStack Start on Node. `init app` registers an owned App and creates
+  source; `db init`, `auth init` and `ai init` install their resource bindings. Deployment is not implemented.
+- **The app owns APIs and data.** Use its restricted Mongo database and normal server repositories.
+  All DDL uses CLI `generate → migrate` or optional `push`, never a runtime request. Only `users` is
+  a default collection; choose other collections from the product. Dynamic Entity APIs are retired.
+- **UC owns identity.** `users._id` is the verified UC ID string. Mongo user recording is best effort
+  and never gates a valid UC login. Scope private reads and writes by the server-verified user.
+- **Browser and server have separate credentials.** Browser SDK requests are same-origin. Mongo and
+  `@howone/sdk/server` stay server-side. CLI login authorizes resource management, not App-user login.
+  Dev `ai init` temporarily copies the creator token into ignored server env; never expose it to clients.
+- **AI submission is asynchronous.** Keep the returned job ID, continue independent code work and
+  poll that job. Sync a completed, published Release before binding SDK actions. Workflow output
+  schemas do not create database collections; persist requested history in app business code.
 
-## Complete the user-visible feature
+## Deliver observable behavior
 
-For a new generated app, run typecheck, build and its verify script; for an existing app, use its
-actual checks and run the verifier from this Skill with the project root when applicable. Verify
-changed routes and persistence, not just compilation. Test login/user isolation when changed;
-distinguish simulated checks from real UC login and real AI execution.
+Run the app's relevant checks; a fresh starter provides `typecheck`, `build` and `verify`. Check the
+changed user flow, persistence and ownership when applicable. The Skill's
+`scripts/verify-project.mjs <app-root>` checks the generated project contract; it does not prove a
+real UC login or AI execution.
 
-Report the runnable app, implemented behavior, checks completed and any concrete missing setup.
-Do not report a queued AI job, a mock login, or an image preview without requested persistence as
-finished work. Continue independent code work while authoring runs; retain job IDs and real failures.
+Report the runnable URL, implemented behavior, actual checks and any concrete remaining service or
+credential dependency. A queued AI job, simulated login or unsaved preview is not a completed feature.

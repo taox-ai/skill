@@ -5,9 +5,12 @@ UI and API to their request. This is one Skill; the linked references supply det
 
 ## Bootstrap
 
-Use a compatible installed `howone`, or the package runner `npx --yes howone` for a published release.
+Use a compatible installed `howone`, or the package runner `npx --yes howone@beta` for this release.
+For a persistent installation, use `npm install --global howone@beta`. In package-runner mode,
+replace the `howone` prefix in the examples below with `npx --yes howone@beta`.
 Check `init app --help` supports TanStack and `db migrate --help` describes generated snapshots.
-If missing, install the released CLI with the user's chosen package manager and check again.
+If missing, install the beta CLI with the user's chosen package manager and check again. Do not
+upgrade a compatible existing installation just to match a remembered command.
 
 This architecture may be newer than the npm release. In the HowOne source checkout, run
 `bun run build` in `packages/cli` and use `node <repo>/packages/cli/bin/index.mjs` as the command prefix.
@@ -41,7 +44,8 @@ Define only what the product needs: records, user relationships, API requests/re
 and AI input/output. Add business fields to `users` or create related collections according to the
 actual requirement; no universal profile/organization tables. The default identity key is UC ID.
 
-Implement UI, typed API calls, validation and server queries together. Put the page in
+Read [SDK integration](sdk.md) before wiring auth or AI methods; use the app's installed docs and
+types. Implement UI, typed API calls, validation and server queries together. Put the page in
 `src/routes/index.tsx` (or another file route), reusable UI in `src/components`, client helpers and
 query hooks in `src/lib`, and database queries in `src/server/*.server.ts`. Use the installed
 shadcn primitives from `src/components/ui`. Put UI state in `src/store`; session and remote data
@@ -96,6 +100,6 @@ the user's provider proof; perform independent implementation/checks while await
 
 Start the local App for review when requested or useful. Report its URL, what works, checks performed,
 and any exact unavailable credential/service. Continue all work not blocked by that dependency.
-`howone deploy` is still a placeholder, and `howone login` only saves the CLI developer credential
+`howone deploy` is not implemented, and `howone login` only saves the CLI developer credential
 in `~/.config/howone/auth.json` — it does not sign a browser into the App, so it cannot complete the
 user's OAuth/OTP steps for you.

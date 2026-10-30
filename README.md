@@ -25,6 +25,14 @@ howone skills install howone --agent all
 
 The `howone` skill is the canonical agent workflow for creating TanStack full-stack apps with App-owned MongoDB, UC authentication and HowOne AI capabilities.
 
+## Design
+
+The Skill uses a short entrypoint and task-specific references, following the
+[Vercel CLI Skill](https://github.com/vercel/vercel/blob/main/skills/vercel-cli/SKILL.md).
+Like [Void's agent integration](https://void.cloud/integrations/agents), it directs agents to
+documentation shipped with the installed SDK so API guidance matches the project's version.
+CLI help owns command syntax; the Skill explains resource targeting, workflow decisions and completion.
+
 ## Example
 
 See [`howone/examples/todolist.md`](howone/examples/todolist.md) for a complete teammate flow:

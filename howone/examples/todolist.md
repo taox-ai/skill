@@ -33,9 +33,8 @@ browser user into the App.
 ## Create and bind the App
 
 ```bash
-mkdir todo-app
-cd todo-app
 howone init app todo-app --tanstack --region cn
+cd todo-app
 howone db init
 howone auth init
 howone ai init

@@ -8,13 +8,14 @@ App ID and job/Release identity; changing targets or returning a static result d
 | Missing `howone.yaml` | CLI working directory, parent discovery, `--cwd` or `--config` | Point at the intended app; do not initialize a replacement app. `login`, `logout` and `whoami` are device-scoped and still work without a project |
 | `No saved dev credential` from an App command | `howone whoami` in any directory | Run `howone login` for that environment, or set `HOWONE_TOKEN`; do not hand-edit `~/.config/howone/auth.json` |
 | Missing/stale generated snapshot | Source path, App ID and artifact hash | Regenerate after the intended source change, then migrate/push through the supported path |
-| Control-plane auth/connection failure | Selected dev profile, control URL and presence of the control token | Restore the actual service/authorized config; do not expose credentials or choose another app |
-| `UC 登录服务暂时不可用` / session 503 | CLI-installed `.howone/auth.json`, platform UC connection and any explicitly configured local tunnel | Restore reachability; a network outage does not prove the UC account/token is invalid |
+| Control-plane auth/connection failure | Selected dev profile, control URL and presence of the creator token | Restore the actual service/authorized config; do not expose credentials or choose another app |
+| `UC 登录服务暂时不可用` / session 503 | CLI-installed `.howone/auth.json`, platform UC endpoint and VPN connectivity | Restore reachability; a network outage does not prove the UC account/token is invalid |
 | UC returns 401 after session refresh | UC rejection of the actual credential | Use real sign-in; no local identity fallback |
 | Valid UC login but app `users` record is delayed | Best-effort Mongo recording and database binding | Fix Mongo separately; UC still determines login success |
 | AI authoring queued/running | Saved job ID with `ai status --job <id>` | Continue independent code work and poll; do not resubmit the same contract repeatedly |
 | AI authoring failed/canceled/invalid_request | Real job error and declared contract | Fix the cause before a new submission; retain diagnostic IDs |
 | AI execution is unavailable | Published sync, ready capability, `HOWONE_AI_URL`, `HOWONE_AI_TOKEN` and local dev credential | Sync/connect the intended Release; the CLI developer credential differs from the UC app session. Run `howone ai init` again after an auth or CLI upgrade |
+| AI execution returns 404 from the App | `POST /api/ai/workflow/execute/{projectId}/{workflowId}` and the actual TanStack route | Implement or correct the authenticated route using the installed SDK guide; the starter's AI runtime factory alone does not mount an endpoint |
 | Browser waiting canceled or server restarted | Upstream run state and app persistence | Do not claim upstream cancellation or durable completion without evidence |
 
 Missing or mismatched authentication binding: rerun `howone auth init` for this App. Do not hand-edit
@@ -43,4 +44,4 @@ its final result, so it is not a single JSON document even when `--json` is supp
 `whoami` only inspects the saved credential's identity, issuing site and expiry. It does not verify
 the token remotely or prove the app's current UC login. `login` is implemented but only saves the CLI
 developer credential, so it cannot complete an App user's OAuth/OTP sign-in; `deploy` and `ai run`
-remain placeholders — do not retry them as if an expired session were the cause.
+are not implemented; do not retry them as if an expired session were the cause.
