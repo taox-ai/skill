@@ -73,12 +73,10 @@ the App directory.
 Use only a token authorized by the user/operator; do not fabricate one or borrow another account.
 
 Current dev AI execution uses the saved platform creator identity for billing, separate from UC login.
-`howone ai init` installs an App-scoped runtime key and the server-only local credential provider.
-The App calls the Backend execution gateway; Backend checks PG ownership and the App key before
-injecting its EAX machine credential upstream. The machine key is never exported into the App.
-The developer credential bridge remains local dev only: `howone ai init` writes an App-scoped
-projection of the saved credential to `~/.config/howone/apps/<appId>.json` (0600) and points the App
-at it, so App code never opens the device credential store and other Apps' credentials stay hidden.
+`howone ai init` configures the EAX runtime and writes the EAX URL plus temporary `HOWONE_AI_TOKEN`
+to ignored `.env.local`. The memtest EAX runtime authenticates with `Authorization: Bearer` using
+that CLI token and no release header. Older control planes may return a gateway binding; its App key
+is kept in ignored `.howone/ai.json`.
 
 `howone auth init` fetches this App’s platform UC configuration and installs ignored `.howone/auth.json`
 (mode 0600), with the trusted origin from `dev.yaml`. The server SDK loads it automatically and checks

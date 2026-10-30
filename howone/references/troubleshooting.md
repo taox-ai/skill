@@ -14,18 +14,18 @@ App ID and job/Release identity; changing targets or returning a static result d
 | Valid UC login but app `users` record is delayed | Best-effort Mongo recording and database binding | Fix Mongo separately; UC still determines login success |
 | AI authoring queued/running | Saved job ID with `ai status --job <id>` | Continue independent code work and poll; do not resubmit the same contract repeatedly |
 | AI authoring failed/canceled/invalid_request | Real job error and declared contract | Fix the cause before a new submission; retain diagnostic IDs |
-| AI execution is unavailable | Published sync, ready capability, server AI service binding and local dev credential | Sync/connect the intended Release; the CLI developer credential differs from the UC app session. After upgrading to a CLI that stores credentials per device (`auth.json`), run `howone ai init` once more: the App's `.env.local` still points at the retired `credentials.json` |
+| AI execution is unavailable | Published sync, ready capability, `HOWONE_AI_URL`, `HOWONE_AI_TOKEN` and local dev credential | Sync/connect the intended Release; the CLI developer credential differs from the UC app session. Run `howone ai init` again after an auth or CLI upgrade |
 | Browser waiting canceled or server restarted | Upstream run state and app persistence | Do not claim upstream cancellation or durable completion without evidence |
 
 Missing or mismatched authentication binding: rerun `howone auth init` for this App. Do not hand-edit
 UC tenant IDs or add an app encryption secret. Authentication context belongs to the platform.
 
-## Local development connections
+## Development connections
 
-The App may access private dev services through local Kubernetes port-forwards. Read its configured
-target; `http://127.0.0.1:<port>` is only usable while the corresponding process/tunnel is listening.
-Check that connection and service readiness before changing SDK login code. Use the operator's
-actual kubeconfig, namespace, service and port; do not copy another app's test addresses by default.
+Generated App bindings use VPN-reachable dev endpoints. A `localhost`, `127.0.0.1` or
+`.svc.cluster.local` address in a database, UC or AI binding is invalid and indicates a broken
+control-plane configuration. Check the selected `dev.yaml` target and service readiness before
+changing SDK login code; do not repair it with a local port-forward in a shared App config.
 
 A session request with no cookie may return anonymous without contacting UC. A successful anonymous
 response therefore does not establish that real UC verification is reachable. Test the affected
