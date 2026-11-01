@@ -8,7 +8,7 @@ UI and API to their request. This is one Skill; the linked references supply det
 Use a compatible installed `howone`, or the package runner `npx --yes howone@beta` for this release.
 For a persistent installation, use `npm install --global howone@beta`. In package-runner mode,
 replace the `howone` prefix in the examples below with `npx --yes howone@beta`.
-The single-file/npm template described here requires `howone` 1.0.0-beta.6 or later in the 1.0 beta
+The single-file/npm template described here requires `howone` 1.0.0-beta.7 or later in the 1.0 beta
 line. An older compatible App may keep its existing CLI for unrelated maintenance. Before creating
 a new remote App with a supplied local CLI build, confirm its template's exact SDK/DB versions are
 published; otherwise use the supplied SDK/DB release artifacts for local verification and complete

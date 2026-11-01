@@ -35,6 +35,7 @@ independent work while waiting, and resume resource setup after the credential i
 | AI create/update, asynchronous authoring or saved results | [AI](references/ai.md) |
 | UC login, credentials or environment setup | [Setup](references/setup.md) |
 | SDK imports and browser/server integration | [SDK integration](references/sdk.md) |
+| Expose tested App business routes to Agents | `howone app skill validate/generate/install` and the action contract in `src/server/actions.ts` |
 | Failed login, connection, migration or AI task | [Troubleshooting](references/troubleshooting.md) |
 
 Load only the guide needed for the current step. UI-only work normally needs no resource operation.
@@ -54,6 +55,10 @@ Load only the guide needed for the current step. UI-only work normally needs no 
 - **AI submission is asynchronous.** Keep the returned job ID, continue independent code work and
   poll that job. Sync a completed, published Release before binding SDK actions. Workflow output
   schemas do not create database collections; persist requested history in app business code.
+- **App Skills are generated from explicit contracts.** After a business handler, schema and persistence
+  behavior pass checks, declare its method/path/input/output/auth/side effects in `src/server/actions.ts`
+  and run `howone app skill generate`. The generated Skill contains no credentials or source code; it
+  teaches Agents to call `howone app call`. Do not infer public actions by scanning arbitrary routes.
 
 ## Deliver observable behavior
 

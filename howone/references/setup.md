@@ -45,6 +45,16 @@ howone db migrate
 unchanged init does not rewrite the file or restart the app. Run `bun run dev` from the app.
 A configured backend must allow this App ID; local scaffolding does not extend its authorization.
 
+To call a local App action from an Agent terminal, use the same App server and saved creator credential:
+
+```bash
+howone app call /api/images/generate --input input.json --invocation-id <stable-id> --json
+```
+
+The App must pass `cliPrincipal` to `createAppAuthRuntime`. Backend verifies the creator, App ownership
+and trusted UC association before the App handler receives `user.id`. This dev bridge accepts only a
+loopback `auth.origin`, never sends Mongo credentials, and does not accept `ownerId` from the request.
+
 ## UC application login
 
 The template mounts `/api/auth/*` with the server SDK and includes a custom `/login` page.
