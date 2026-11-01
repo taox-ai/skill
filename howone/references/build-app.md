@@ -9,7 +9,9 @@ Use a compatible installed `howone`, or the package runner `npx --yes howone@bet
 For a persistent installation, use `npm install --global howone@beta`. In package-runner mode,
 replace the `howone` prefix in the examples below with `npx --yes howone@beta`.
 The single-file/npm template described here requires `howone` 1.0.0-beta.7 or later in the 1.0 beta
-line. An older compatible App may keep its existing CLI for unrelated maintenance. Before creating
+line. Shared action contracts additionally require CLI beta.8 and SDK beta.5; confirm the actual
+installed command help and SDK exports before following that branch of [App Skill delivery](app-skill.md).
+An older compatible App may keep its existing CLI for unrelated maintenance. Before creating
 a new remote App with a supplied local CLI build, confirm its template's exact SDK/DB versions are
 published; otherwise use the supplied SDK/DB release artifacts for local verification and complete
 their release before onboarding users. Do not create repeated remote Apps to retry an unpublished dependency.
@@ -50,13 +52,10 @@ and AI input/output. Add business fields to `users` or create related collection
 actual requirement; no universal profile/organization tables. The default identity key is UC ID.
 
 Read [SDK integration](sdk.md) before wiring auth or AI methods; use the app's installed docs and
-types. Implement UI, typed API calls, validation and server queries together. Put the page in
-`src/routes/index.tsx` (or another file route), reusable UI in `src/components`, client helpers and
-query hooks in `src/lib`, and database queries in `src/server/*.server.ts`. Use the installed
-shadcn primitives from `src/components/ui`. Put UI state in `src/store`; session and remote data
-stay in TanStack Query. The starter supplies `src/lib/sdk.ts`, `src/server/auth.server.ts`,
-`src/server/db.server.ts` and `protectedApi` in `src/server/http.server.ts`. Keep HTTP route handlers
-small and keep the starter's flat structure; do not add a `features` or `pages` layer by default.
+types. Implement UI, typed API calls, validation and server queries together. Follow
+[App structure](template.md) for the starter's edit map and client/server boundaries. Use its
+existing SDK adapters, `protectedApi` and installed shadcn components. Keep the initial layout flat;
+introduce additional modules only when the business actually needs them.
 
 ## 3. Connect data and identity
 
@@ -93,7 +92,7 @@ When history is part of the feature, add its business collection through step 3.
 output, save it with verified owner/run ID on the server, then report completion. Handle workflow
 errors and loading explicitly. Browser-only state does not fulfill durable history.
 
-## 5. Verify and hand over a runnable result
+## 5. Verify the runnable result
 
 Run the app's typecheck/build and checks for the changed feature. A fresh starter also has
 `bun run verify`. From another project layout, the same static check can be invoked as
@@ -103,8 +102,24 @@ Check the browser, anonymous/authenticated API behavior and persistence/isolatio
 static verifier does not prove a successful live login or AI run. Actual OAuth/OTP still requires
 the user's provider proof; perform independent implementation/checks while awaiting that step.
 
+## 6. Deliver the App usage Skill
+
+For a new App, include its Agent-callable business actions in the design and finish its App Skill
+without waiting for the user to ask. Follow [App Skill delivery](app-skill.md): use the actual
+authenticated API contracts and shared server handlers, then validate and install the generated
+Skill with `howone app skill install --agent all`. Existing Apps need an update when an exposed
+action is added, changed or removed; UI-only changes do not. Describe only implemented behavior.
+If there are no suitable server actions, keep an empty declaration and report that no callable
+usage Skill is needed; do not invent an API or install a Skill that cannot perform an action.
+The CLI generator checks declarations, not whether their routes work. Reuse the relevant feature
+verification above rather than repeating paid AI runs just to generate documentation.
+
+## 7. Hand over
+
 Start the local App for review when requested or useful. Report its URL, what works, checks performed,
-and any exact unavailable credential/service. Continue all work not blocked by that dependency.
+the App Skill location and callable actions, and any exact unavailable credential/service. If a live
+action check remains blocked, distinguish generated instructions from a verified working invocation.
+Continue all work not blocked by that dependency.
 `howone deploy` is not implemented, and `howone login` only saves the CLI developer credential
 in `~/.config/howone/auth.json` — it does not sign a browser into the App, so it cannot complete the
 user's OAuth/OTP steps for you.

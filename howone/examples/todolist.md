@@ -13,7 +13,7 @@ npx skills add taox-ai/skill --skill howone
 ```text
 请先使用 HowOne Skill，然后创建一个中文 Todo 全栈 App：支持 UC 登录，每个用户只能看到自己的 Todo，
 支持创建、完成、删除和筛选；页面使用 TanStack Start 和 shadcn；再加一个 AI 能力，
-可以根据 Todo 内容生成一张图片并保存生成记录。只使用 dev 环境。
+可以根据 Todo 内容生成一张图片并保存生成记录。只使用 dev 环境，并交付这个 App 的终端使用 Skill。
 ```
 
 The agent should create normal TanStack source code and use HowOne only for platform resources.
@@ -94,9 +94,17 @@ manifest in server code. The browser calls the App's same-origin API; it never r
 token or an EAX service credential. Image history belongs in an App collection such as
 `generated_images`, scoped by the verified UC user ID.
 
+## Deliver the App usage Skill
+
+After verifying the business APIs and persistence, declare their actual contracts in `actions.source`
+and run `howone app skill install --agent all`. Follow [App Skill delivery](../references/app-skill.md)
+for validation, updating generated copies and current local-only invocation. The coding Agent handles
+this as part of product delivery; the user does not need to choose commands or supply an owner ID.
+
 ## Expected result
 
 The finished App has a real login page, isolated user Todo data, Mongo migrations in `migrations/`,
-an AI capability pinned by `src/lib/generated/ai-manifest.json`, and a normal `bun run dev` command.
+an AI capability pinned by `src/lib/generated/ai-manifest.json`, a generated App usage Skill for tested
+business actions, and a normal `bun run dev` command.
 The next schema or AI change repeats the corresponding `generate` and `migrate` flow; no Studio
 dynamic Entity operation is involved.

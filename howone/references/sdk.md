@@ -30,7 +30,8 @@ support dev only; this boundary allows later production and regional targets wit
 |---|---|---|
 | `@howone/sdk/auth` | Browser | App login, session and UC user state through same-origin routes |
 | `@howone/sdk/ai` | Browser | Typed actions and streaming execution through the App API |
-| `@howone/sdk/server` | Node server | UC verification, cookies, OAuth and direct EAX execution |
+| `@howone/sdk/server` | Node server | UC verification, cookies, OAuth, EAX and (new SDK) action handler binding |
+| `@howone/sdk/actions` (new SDK) | Browser / CLI | Pure shared action definitions, contract export and typed App API client |
 | `@howone/db/schema` | Server / CLI | App Mongo schema and migration contract |
 | `@howone/db` | Node server | Restricted App database access |
 
@@ -54,6 +55,9 @@ not prove the upstream job stopped. See [AI](ai.md) for authoring and persistenc
 The default AI client calls `POST /api/ai/workflow/execute/{projectId}/{workflowId}`. A new App needs
 the matching authenticated Server Route; the starter only supplies its runtime factory. Check this
 route first for a local 404, then use the installed `docs/app-ai.md` example for body/response wiring.
+
+For the shared-contract runtime, read installed `docs/app-actions.md` and [App Skill delivery](app-skill.md).
+Its APIs require SDK beta.5/CLI beta.8; preserve legacy routes when those exports are unavailable.
 
 Business routes own validation, user authorization and database writes. A business exception is not
 an authentication failure; preserve that distinction in API responses and UI recovery.

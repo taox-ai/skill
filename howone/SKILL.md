@@ -31,11 +31,12 @@ independent work while waiting, and resume resource setup after the credential i
 | Task | Guide |
 |---|---|
 | New app or a feature spanning UI, APIs and data | [Build an app](references/build-app.md) |
+| Starter layout, page composition or client/server boundaries | [App structure](references/template.md) |
 | Mongo schema, queries or migrations | [Database](references/database.md) |
 | AI create/update, asynchronous authoring or saved results | [AI](references/ai.md) |
 | UC login, credentials or environment setup | [Setup](references/setup.md) |
 | SDK imports and browser/server integration | [SDK integration](references/sdk.md) |
-| Expose tested App business routes to Agents | `howone app skill validate/generate/install` and the action contract in `src/server/actions.ts` |
+| Finish an App or change its Agent-callable business APIs | [App Skill delivery](references/app-skill.md) |
 | Failed login, connection, migration or AI task | [Troubleshooting](references/troubleshooting.md) |
 
 Load only the guide needed for the current step. UI-only work normally needs no resource operation.
@@ -55,10 +56,9 @@ Load only the guide needed for the current step. UI-only work normally needs no 
 - **AI submission is asynchronous.** Keep the returned job ID, continue independent code work and
   poll that job. Sync a completed, published Release before binding SDK actions. Workflow output
   schemas do not create database collections; persist requested history in app business code.
-- **App Skills are generated from explicit contracts.** After a business handler, schema and persistence
-  behavior pass checks, declare its method/path/input/output/auth/side effects in `src/server/actions.ts`
-  and run `howone app skill generate`. The generated Skill contains no credentials or source code; it
-  teaches Agents to call `howone app call`. Do not infer public actions by scanning arbitrary routes.
+- **Web and terminal share business behavior.** App Skills describe explicit authenticated APIs;
+  those APIs reuse the App's server handlers, validation and persistence. A Skill contains no
+  credentials or business implementation and cannot grant access to an App.
 
 ## Deliver observable behavior
 
@@ -66,6 +66,13 @@ Run the app's relevant checks; a fresh starter provides `typecheck`, `build` and
 changed user flow, persistence and ownership when applicable. The Skill's
 `scripts/verify-project.mjs <app-root>` checks the generated project contract; it does not prove a
 real UC login or AI execution.
+
+For a new App, finish by designing, generating and installing its App-specific usage Skill as part
+of the task; do not wait for a separate user request. Refresh it when exposed API behavior changes.
+Follow [App Skill delivery](references/app-skill.md); UI-only changes need no regeneration. This is
+the coding Agent's completion step, not an automatic init, build or deployment hook. If an App has
+no suitable server actions, keep the declaration empty and explain the terminal limitation instead
+of installing an empty usage Skill.
 
 Report the runnable URL, implemented behavior, actual checks and any concrete remaining service or
 credential dependency. A queued AI job, simulated login or unsaved preview is not a completed feature.
